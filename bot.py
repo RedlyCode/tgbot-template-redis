@@ -3,7 +3,7 @@ import logging
 
 from aiogram import Dispatcher, Bot
 from aiogram.enums import ParseMode
-from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.fsm.storage.redis import RedisStorage, DefaultKeyBuilder
 
 from infrastructure.database.functions.setup import create_engine, sync_database_tables, create_session_pool
 from tgbot.config import Config, load_config
@@ -27,7 +27,10 @@ async def main():
     logger.info('Starting bot...')
 
     config = load_config('.env')  # Load the configuration from .env file
-    storage = MemoryStorage()
+    storage = RedisStorage(
+        redis=config.redis.build_redis(),
+        key_builder=DefaultKeyBuilder(with_bot_id=True, with_destiny=True)
+    )
     bot = Bot(token=config.tg_bot.token, parse_mode=ParseMode.HTML)
     dp = Dispatcher(storage=storage)
 
