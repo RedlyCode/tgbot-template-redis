@@ -12,6 +12,17 @@ services:
     restart: on-failure
     ports:
       - "5432:5432"
+  redis:
+    image: redis:7.0.11-alpine
+    command: sh -c "if [ -z '$REDIS_PASSWORD' ]; then redis-server --port ${REDIS_PORT:-6379} --save 20 1 --loglevel warning; else redis-server --port ${REDIS_PORT:-6379} --save 20 1 --loglevel warning --requirepass $REDIS_PASSWORD; fi"
+    environment:
+      - REDIS_PORT=$REDIS_PORT
+      - REDIS_PASSWORD=$REDIS_PASSWORD
+    volumes:
+      - redisdata:/data
+    restart: on-failure
+    ports:
+      - "6379:6379"
   bot:
     build: .
     command: sh -c "python -m bot"
@@ -20,7 +31,9 @@ services:
     restart: always
     depends_on:
       - postgres
+      - redis
 
 
 volumes:
   pgdata:
+  redisdata:
