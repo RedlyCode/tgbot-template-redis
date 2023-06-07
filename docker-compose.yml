@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=$DATABASE_USER
+      - POSTGRES_PASSWORD=$DATABASE_PASSWORD
+      - POSTGRES_DB=$DATABASE_NAME
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: on-failure
+    ports:
+      - "5432:5432"
+  bot:
+    build: .
+    command: sh -c "python -m bot"
+    env_file:
+      - ./.env
+    restart: always
+    depends_on:
+      - postgres
+
+
+volumes:
+  pgdata:
