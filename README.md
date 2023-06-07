@@ -17,6 +17,11 @@ the [`aiogram v3.0+`](https://github.com/aiogram/aiogram/tree/dev-3.x) library.*
 4. Install dependencies from requirements.txt: `pip install -r requirements.txt`.
 5. Run the project with the `python3 bot.py` command.
 
+### How to run a project with Docker:
+
+1. You can run your project using Docker, or if you don't have it, [download and install it](https://docs.docker.com/get-docker/).
+2. Run the project with the `docker-compose up` command.
+
 ### How to make and register handlers:
 
 1. Create the `you_name.py` module in the `handlers` folder.
