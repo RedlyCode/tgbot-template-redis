@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from environs import Env
+from redis.asyncio.client import Redis
 from sqlalchemy import URL
 
 
@@ -24,6 +25,22 @@ class DatabaseConfig:
 
 
 @dataclass
+class RedisConfig:
+    host: str  # Redis server host. Local example: 127.0.0.1 or localhost
+    port: int = 6379  # Redis port. Default value: 6379
+    database: int = 0  # Redis database number. Default value: 0
+    password: str = None  # Redis password. Default value: None
+
+    def build_redis(self) -> Redis:
+        return Redis(
+            host=self.host,
+            port=self.port,
+            db=self.database,
+            password=self.password
+        )
+
+
+@dataclass
 class TelegramBot:
     token: str  # Telegram bot token
     admin_ids: list[int]  # List of bot admins
@@ -38,6 +55,7 @@ class Miscellaneous:
 class Config:
     tg_bot: TelegramBot
     db: DatabaseConfig
+    redis: RedisConfig
     misc: Miscellaneous
 
 
@@ -56,6 +74,12 @@ def load_config(path: str = None) -> Config:
             database=env.str("DATABASE_NAME"),
             host=env.str("DATABASE_HOST"),
             port=env.int("DATABASE_PORT", 5432)
+        ),
+        redis=RedisConfig(
+            host=env.str("REDIS_HOST"),
+            port=env.int("REDIS_PORT", 6379),
+            database=env.int("REDIS_DATABASE", 0),
+            password=env.str("REDIS_PASSWORD", None)
         ),
         misc=Miscellaneous()
     )
